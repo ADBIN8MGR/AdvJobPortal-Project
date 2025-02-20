@@ -6,6 +6,7 @@ dotenv.config();
 import morgan from "morgan";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import connectDB from "./db/connect.js";
 
 // routers
 import jobRouter from "./routes/jobRouter.js";
@@ -39,12 +40,16 @@ app.use("*", (req, res) => {
 
 app.use(errorHandlerMiddleware);
 
-try {
-  await mongoose.connect(process.env.MONGO_URL);
-  app.listen(5100, () => {
-    console.log("server is working ");
-  });
-} catch (error) {
-  console.log(error);
-  process.exit(1);
-}
+const port = process.env.PORT || 5100;
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URL);
+    app.listen(port, () =>
+      console.log(`Server is listening on port ${port}...`)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
